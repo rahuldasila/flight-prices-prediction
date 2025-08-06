@@ -1,5 +1,7 @@
 import joblib
 
+import cloudpickle
+
 import warnings
 
 import numpy as np
@@ -212,7 +214,8 @@ y_train = train.price.copy()
 # fit and save the preprocessor
 
 preprocessor.fit(X_train,y_train)
-joblib.dump(preprocessor,"preprocessor.joblib")
+with open("preprocessor.joblib", "wb") as f:
+    cloudpickle.dump(preprocessor, f)
 
 # WEB APPLICATION
 
@@ -278,7 +281,9 @@ x_new = pd.DataFrame(dict(
 }) #pandas to_datetime doesn't work on streamlit date-time object
 
 if st.button("Predict"):
-     saved_preprocessor = joblib.load("preprocessor.joblib")
+     with open("preprocessor.joblib", "rb") as f:
+        saved_preprocessor = cloudpickle.load(f)
+
      x_new_pre = saved_preprocessor.transform(x_new)
      
      model = joblib.load("rf-model.pkl")
